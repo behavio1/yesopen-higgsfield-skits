@@ -621,6 +621,31 @@ def cmd_status(args, config):
     return 0
 
 
+def kept_disk(machine: dict, state: dict):
+    """The disk with the models: the one in state.json, else the volume called verda.os_volume_name in Verda
+    (a fresh state.json on another computer must not lead to a new, empty disk)."""
+    volumes = verda(["volume", "list", "-o", "json"]) or []
+    by_id = next((v for v in volumes if v.get("id") == state.get("os_volume_id")), None) if state.get("os_volume_id") else None
+    # an id in state.json that Verda no longer lists (deleted by hand) falls back to the name, so the location is known
+    by_name = next((v for v in volumes if v.get("name") == machine["os_volume_name"]), None)
+    return by_id or by_name or ({"id": state["os_volume_id"]} if state.get("os_volume_id") else None)
+
+
+def free_type(types: list, location: str):
+    """The first instance type in the order of the config with a free card in the location, or None when every one
+    is reported as not available. An answer without the `available` field (or no answer) is no reason to wait: the
+    order is tried and Verda decides."""
+    for kind in types:
+        info = verda(["availability", "--type", kind, "--location", location, "-o", "json"]) or {}
+        if info.get("available", True):
+            return kind
+    return None
+
+
+CARD_POLL = 60  # seconds between two looks for a free card
+CARD_WAIT = 120  # minutes to wait for a free card before giving up (--wait-card)
+
+
 def cmd_up(args, config):
     require_verda(config)
     machine, state = config["verda"], load_state()
@@ -632,20 +657,41 @@ def cmd_up(args, config):
         if not machine.get(key):
             raise SystemExit(f"set verda.{key} in {CONFIG} first "
                              f"({'verda instance-types --gpu' if key == 'instance_type' else 'verda ssh-key list'})")
+    # one type, or a list in order of preference (B200 first, then H200): the first with a free card is ordered
+    types = machine["instance_type"] if isinstance(machine["instance_type"], list) else [machine["instance_type"]]
+    disk = None if args.first else kept_disk(machine, state)
+    # the kept disk only boots where it is: wait for a card there instead of starting over on a new disk elsewhere
+    location = (disk or {}).get("location") or machine["location"]
+    kind = free_type(types, location)
+    if kind is None and args.yes:
+        limit = getattr(args, "wait_card", None)
+        limit = CARD_WAIT if limit is None else limit
+        print(f"no free card of {', '.join(types)} in {location}; waiting for one, up to {limit} min (Ctrl+C to give up)")
+        waited = 0
+        while kind is None:
+            if waited >= limit * 60:
+                print(f"no free card after {limit} min; nothing was ordered. Try again later or with --wait-card <min>.")
+                return 1
+            time.sleep(CARD_POLL)
+            waited += CARD_POLL
+            kind = free_type(types, location)
+        print(f"free card: {kind} in {location}")
     # one key id, or a list: every key on the team, so whoever runs start later can reach the machine
     keys = machine["ssh_key_id"] if isinstance(machine["ssh_key_id"], list) else [machine["ssh_key_id"]]
-    command = ["vm", "create", "--kind", "gpu", "--instance-type", machine["instance_type"],
-               "--location", machine["location"], "--hostname", machine["hostname"]]
+    command = ["vm", "create", "--kind", "gpu", "--instance-type", kind or types[0],
+               "--location", location, "--hostname", machine["hostname"]]
     for key_id in keys:
         command += ["--ssh-key", key_id]
     command += ["--contract", machine.get("contract", "pay_as_go"), "--wait", "--wait-timeout", "20m", "-o", "json"]
-    if args.first or not state.get("os_volume_id"):
+    if disk:
+        command += ["--os", disk["id"]]  # boot the kept disk: models and images are already there
+    else:
         command += ["--os", machine["os"], "--os-volume-size", str(machine["os_volume_size"]),
                     "--os-volume-name", machine["os_volume_name"]]
-    else:
-        command += ["--os", state["os_volume_id"]]  # boot the kept disk: models and images are already there
     print("verda " + " ".join(shlex.quote(c) for c in command))
     if not args.yes:
+        if kind is None:
+            print(f"No free card of {', '.join(types)} in {location} right now; with --yes this waits for one.")
         print("This starts billing for the machine. Run again with --yes to create it.")
         return 0
     try:
@@ -665,7 +711,7 @@ def cmd_up(args, config):
     if item.get("status") != "running":
         # --wait stops at any final status; no_capacity and offline end the wait without an error
         print(f"The machine is {item.get('status')}, not running. Remove the order with gpu.py down --yes"
-              + (f"; for free capacity see verda availability --type {machine['instance_type']}"
+              + (f"; for free capacity see verda availability --type {kind or types[0]}"
                  if item.get("status") == "no_capacity" else "") + ".")
         return 1
     return 0
@@ -823,7 +869,7 @@ def cmd_start(args, config):
                 print("No machine is running. gpu.py start --yes makes this one; it bills from that moment:")
                 cmd_up(argparse.Namespace(first=False, yes=False), config)
                 return 2
-            if cmd_up(argparse.Namespace(first=False, yes=True), config):
+            if cmd_up(argparse.Namespace(first=False, yes=True, wait_card=getattr(args, "wait_card", None)), config):
                 return 1  # the order did not start; cmd_up said why and what to do
             item = find_instance(machine["hostname"])
         elif item.get("status") in FAILED:
@@ -1028,6 +1074,7 @@ def main(argv=None) -> int:
     p = sub.add_parser("up", help="create the Verda machine (billing starts)")
     p.add_argument("--first", action="store_true", help="fresh OS image instead of the kept disk")
     p.add_argument("--yes", action="store_true")
+    p.add_argument("--wait-card", type=int, metavar="MIN", help=f"with --yes: minutes to wait for a free card (default {CARD_WAIT})")
     p.set_defaults(func=cmd_up)
     p = sub.add_parser("down", help="delete the Verda machine, keep the disk")
     p.add_argument("--yes", action="store_true")
@@ -1036,6 +1083,7 @@ def main(argv=None) -> int:
     p.add_argument("--yes", action="store_true", help="make the machine if there is none (billing starts)")
     p.add_argument("--first", action="store_true", help=argparse.SUPPRESS)
     p.add_argument("--bootstrap", action="store_true", help="install the stack again even if it is current")
+    p.add_argument("--wait-card", type=int, metavar="MIN", help=f"minutes to wait for a free card (default {CARD_WAIT})")
     p.set_defaults(func=cmd_start)
     p = sub.add_parser("stop", help="close the tunnel and delete the machine (--yes); the disk stays")
     p.add_argument("--yes", action="store_true")

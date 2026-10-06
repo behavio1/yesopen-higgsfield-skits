@@ -13,8 +13,8 @@
   "editor_image": "yesopen-editor:latest",
   "verda": {
     "hostname": "yesopen-gpu",
-    "instance_type": null,
-    "_instance_type": "1B200.30V: 1x B200 180 GB, $6.987 an hour on demand; fallback 1H200.141S.44V ($4.779); list: verda instance-types --gpu",
+    "instance_type": ["1B200.30V", "1H200.141S.44V"],
+    "_instance_type": "1B200.30V: 1x B200 180 GB, $6.987 an hour on demand; fallback 1H200.141S.44V ($4.779); list: verda instance-types --gpu. A list ([\"1B200.30V\", \"1H200.141S.44V\"]) orders the first with a free card in the kept disk's location; start --yes waits until one is free",
     "ssh_key_id": null,
     "_ssh_key_id": "verda ssh-key add --name yesopen-gpu --public-key \"$(cat ~/.ssh/id_ed25519_yesopen_gpu.pub)\", then verda ssh-key list. A team sharing one Verda project lists every member's key id here ([\"id-1\", \"id-2\"]), so whoever starts the machine lets the others connect to it too",
     "location": "FIN-03",

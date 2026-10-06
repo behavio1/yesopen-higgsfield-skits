@@ -46,7 +46,7 @@ download in the background.
 console and saves them with `verda auth login` in their own terminal (never through a chat or an agent), or they
 reach the CLI as `VERDA_CLIENT_ID` and `VERDA_CLIENT_SECRET` in the environment (the team vault's way,
 `../scripts/verda-vault.py`; never on a command line), then `verda ssh-key add --name yesopen-gpu --public-key "$(cat ~/.ssh/id_ed25519_yesopen_gpu.pub)"`. In
-`config.json` → `verda` set `instance_type` (`1H200.141S.44V` tested, `1B200.30V` planned), `ssh_key_id`
+`config.json` → `verda` set `instance_type` (`1H200.141S.44V` tested, `1B200.30V` planned; a list orders the first type with a free card in the kept disk's location, and `up --yes` waits for one for 120 minutes, `--wait-card <min>`), `ssh_key_id`
 (`verda ssh-key list`) and `location` (one with a free card: `verda availability --type <type>`).
 `gpu.py verda-check` checks all of it; until it passes, `start`, `stop`, `up`, `down` and `status` stop with the
 setup steps (an outage of Verda's API only warns). `start --yes`
