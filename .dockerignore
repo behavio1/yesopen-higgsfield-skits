@@ -1,0 +1,6 @@
+.git
+.env
+examples/
+**/__pycache__/
+*.mp4
+*.mov

@@ -86,6 +86,9 @@ git clone https://github.com/behavio1/yesopen-higgsfield-skits.git ~/.agents/ski
 SK=~/.agents/skills/yesopen-higgsfield-skits
 ```
 
+On Windows, with Docker Desktop and no WSL: the tools come in a Docker image and every command goes through
+`scripts\skill.ps1`. Install it as a Claude Code skill and set it up: [docs/docker-client.md](docs/docker-client.md).
+
 GPU engine, once: a key for the server and your settings, which stay outside the skill.
 
 ```bash

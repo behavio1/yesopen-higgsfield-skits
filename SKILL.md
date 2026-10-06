@@ -32,6 +32,9 @@ the finals. Read the case study before your first skit.
 `G="python3 $SK/gpu/client/gpu.py"`. Talk to the user in their language; the dialogue of the video is English
 unless they ask otherwise.
 
+On Windows the tools are not installed: run every command of this skill through `scripts\skill.ps1` (it starts it in
+a Docker container where `SK` is `/skill`), for example `scripts\skill.ps1 gpu status`. See `docs/docker-client.md`.
+
 ## Production procedure and runtime boundaries
 
 Read [references/production-procedure.md](references/production-procedure.md) before paid work or resuming

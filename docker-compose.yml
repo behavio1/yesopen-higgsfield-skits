@@ -1,0 +1,52 @@
+# Client environment for the skill (see docker/Dockerfile). Use it through scripts\skill.ps1.
+services:
+  skill:
+    # Built locally on first use (scripts\skill.ps1 build). Nothing is published or pulled.
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: yesopen-skill:local
+    working_dir: /skill
+    environment:
+      YESOPEN_SHORTS_ROOT: /videos/yesopen-skits
+      # the secrets come from the sidecar below (local), or from the environment when there is no sidecar (GitHub
+      # Actions secrets). Never from a file, never from the image.
+      SECRETS_URL: http://secrets:8080
+      VERDA_CLIENT_ID:
+      VERDA_CLIENT_SECRET:
+      YESOPEN_GPU_SSH_KEY:
+      YESOPEN_GPU_SSH_KEY_PUB:
+    volumes:
+      - .:/skill
+      # every project of a skit is made here, in the Windows Videos folder, in the subfolder yesopen-skits: <date>-<slug>
+      - ${USERPROFILE:-${HOME}}/Videos:/videos
+      - gpu-home:/root/.config/yesopen-gpu
+      # Whisper models (large-v3-turbo is about 1.5 GB), downloaded on first use and kept between runs
+      - whisper-cache:/root/.cache/whisper
+    networks: [secrets]
+    stdin_open: true
+    tty: true
+
+  # Holds the secrets in memory only. `scripts\skill.ps1 unlock` signs you in with your GitHub account and pulls them
+  # from the private secrets repo (you must be its collaborator); `scripts\skill.ps1 lock` wipes them.
+  # No published ports: only containers on the `secrets` network reach it.
+  secrets:
+    build:
+      context: docker/secrets
+    image: yesopen-secrets:local
+    environment:
+      SECRETS_REPO: ${SECRETS_REPO:-}   # <owner>/<private-secrets-repo>, see docs/docker-client.md
+    tmpfs:
+      - /mem:size=1m,mode=0700
+      - /tmp
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [secrets]
+
+networks:
+  secrets:
+
+volumes:
+  gpu-home:
+  whisper-cache:
