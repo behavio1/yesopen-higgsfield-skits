@@ -1,0 +1,24 @@
+{
+  "seconds": 8,
+  "seed": 42,
+  "aspect": "9:16 (Portrait Widescreen)",
+  "language": "Polish",
+  "dialogue": "Naprawdę? Ktoś już odpisał? To pierwszy spokojny wieczór w tym tygodniu.",
+  "identity": {"file": "stills/owner.png", "permission": "Replace with actual ownership/consent and upload permission"},
+  "performance": {"file": "references-owned/acting.mp4", "start": 0, "seconds": 6, "permission": "Replace with actual ownership/consent and upload permission"},
+  "voice": {"file": "voices/owner.wav", "start": 0, "seconds": 5, "permission": "Replace with actual synthetic-source provenance or speaker consent and upload permission"},
+  "acting": {
+    "objective": "Find out whether the evening's work is really finished.",
+    "subtext": "I expect another problem, but want to believe I can go home.",
+    "emotion_start": "Tired skepticism, attentive eyes; no fixed smile.",
+    "emotion_end": "Quiet, surprised relief, a small sincere smile.",
+    "delivery": "First question tentative and rising; a small breath, then warm relief. Do not shout or read like an announcer.",
+    "gesture": "One glance at the phone, then loosen shoulders as the answer lands.",
+    "listener": "Look toward the off-camera colleague while listening; do not stare motionlessly at the lens.",
+    "start": "Medium shot, phone in right hand at waist, gaze toward colleague.",
+    "action": "Glance down, look back, ask the questions, exhale and finish the last sentence.",
+    "end": "Phone remains in the same hand; shoulders relaxed, gaze on colleague.",
+    "hold": "Keep the relieved reaction readable for half a second after the line; no new action.",
+    "camera": "One steady eye-level smartphone shot, natural light, no zoom or cut."
+  }
+}
