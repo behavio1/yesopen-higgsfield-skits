@@ -1,9 +1,25 @@
 ---
 name: yesopen-higgsfield-skits
-description: Make short, funny YesOpen video skits for TikTok, Reels and Shorts on your own GPU server with open models (ComfyUI: Chatterbox voices, LTX lip sync, Z-Image, ACE-Step music) or with Higgsfield. Take a reference video's comedy mechanics, write a skit where YesOpen is only the punchline, cast it, record every line and film it to that sound, cut it with scripted ffmpeg (captions, notification banners, end card, music on the beat) and deliver 9:16, 4:5, 1:1 and 16:9. Its client finds, connects to or orders the GPU machine and sets it up. Use whenever the user shares a YouTube, TikTok or Instagram link and asks for "taką scenkę", "coś takiego dla YesOpen", a funny video, short, reel, skit, filmik or ad for YesOpen or local businesses (gyms, restaurants, salons, shops), wants it "na naszym serwerze", "lokalnie", "na GPU" or with Higgsfield, or wants to re-cut, reformat or continue the gym breakup skit ("It's not you. It's your invoices."). Not for product demos, screen recordings or feature explainers.
+description: "Make natural, expressive MiniMax H3 videos with authorized performance/video and voice references on ComfyUI, or short, funny YesOpen video skits for TikTok, Reels and Shorts on your own GPU server with open models (ComfyUI: Chatterbox voices, LTX lip sync, Z-Image, ACE-Step music) or with Higgsfield. Take a reference video's comedy mechanics, write a skit where YesOpen is only the punchline, cast it, record every line and film it to that sound, cut it with scripted ffmpeg (captions, notification banners, end card, music on the beat) and deliver 9:16, 4:5, 1:1 and 16:9. Its client finds, connects to or orders the GPU machine and sets it up. Use whenever the user shares a YouTube, TikTok or Instagram link and asks for \"taką scenkę\", \"coś takiego dla YesOpen\", a funny video, short, reel, skit, filmik or ad for YesOpen or local businesses (gyms, restaurants, salons, shops), wants it \"na naszym serwerze\", \"lokalnie\", \"na GPU\" or with Higgsfield, or wants to re-cut, reformat or continue the gym breakup skit (\"It's not you. It's your invoices.\"). Not for product demos, screen recordings or feature explainers."
+metadata:
+  version: "2026.10.26-rc.1"
 ---
 
 # YesOpen skits on your own GPU server or Higgsfield
+
+## H3 performance-reference route — 2026.10.26
+
+When the user selects MiniMax H3 on their own GPU (including a rented H200), use
+[H3 performance references](references/h3-performance.md) before the older audio-first GPU recipe below.
+This route prepares an identity image, a real 24 fps performance reference and optional authorized voice,
+then generates picture and sound jointly in ComfyUI. Do not silently choose LTX or a hosted provider.
+Use `scripts/h3_performance.py`, `templates/h3-performance-shot.json` and
+`templates/h3-performance-review.md`. Preserve the existing inspiration-media privacy and consent rules;
+separate authorized performance inputs may be uploaded for this route. Start with one reviewed pilot.
+
+The new runner targets an explicitly allocated idle ComfyUI session, not the shared coordinator.
+Existing pipelines remain available. See [release notes](CHANGELOG.md) for validation boundaries.
+
 
 This skill turns "make something like this for YesOpen" plus a link into a finished, funny vertical video and its
 other formats. Two engines make the pictures and the voices:

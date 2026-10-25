@@ -1,5 +1,17 @@
 # YesOpen skits on your own GPU server or Higgsfield
 
+## H3 performance references (2026.10.26)
+
+For MiniMax H3 on your own ComfyUI GPU: condition a take on an authorized acting video and optional
+voice sample, with explicit emotion, delivery, gesture and reaction direction. Prepare offline, check
+the server read-only, submit one pilot and resume by prompt ID without duplicate generation.
+
+[Workflow and commands](references/h3-performance.md) · [Shot template](templates/h3-performance-shot.json) ·
+[Naturalness review](templates/h3-performance-review.md) · [Release notes](CHANGELOG.md)
+
+This is an additional production route; no Hypit installation or hosted model service is required.
+GPU output quality is not established by local integration tests.
+
 An agent skill that turns "make something like this for YesOpen" plus a link to a short video into a finished,
 funny skit, delivered in 9:16, 4:5, 1:1 and 16:9. The cast stills, the voices and the talking, lip-synced takes
 come from your own GPU server with open models (ComfyUI with Z-Image, Chatterbox, LTX-2.3 and ACE-Step), or from

@@ -65,3 +65,13 @@ engine only.
 - [ ] Web version sent for preview; Artifact page only if asked.
 - [ ] Nothing posted publicly without an explicit request.
 - [ ] `script.md` updated with what changed in production and the final files.
+
+## H3 performance-reference route
+
+- [ ] Follow `h3-performance.md`; use separately authorized references, never inspiration-only private media.
+- [ ] Prepared reference video is 24 fps, 2–15 seconds, silent; optional voice is explicit and authorized.
+- [ ] Actual submitted graph connects video and optional voice to H3; no image-only fallback.
+- [ ] Intention, emotional change, delivery, gesture, listening and reaction hold reach the actual prompt.
+- [ ] Use `templates/h3-performance-review.md`; view the entire pilot with sound and muted.
+- [ ] Naturalness, voice, physical action and continuity accepted before expanding the batch.
+- [ ] Keep every attempt, input hashes, prompt ID and result hashes. ASR alone does not pass acting.
